@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f2">
+  <meta name="description" content="用几步配置，为项目生成清晰、实用的中文 AGENTS.md。">
+  <title>AGENTS.md 中文生成器</title>
+  <style>
+    :root { color-scheme: light; --ink:#202b27; --muted:#718078; --line:#e3e9e3; --paper:#fff; --bg:#f5f7f3; --green:#236a4b; --green-dark:#174d36; --mint:#e8f3eb; --orange:#e8a766; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    button, input, select, textarea { font:inherit; }
+    .topbar { max-width:1120px; margin:auto; padding:24px 28px; display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:750; letter-spacing:-.03em; }
+    .brand-mark { width:34px; height:34px; display:grid; place-items:center; border-radius:11px; color:white; background:var(--green); font-size:18px; }
+    .top-note { color:var(--muted); font-size:13px; }
+    main { max-width:1120px; margin:0 auto; padding:28px 28px 70px; }
+    .hero { max-width:680px; margin:12px auto 38px; text-align:center; }
+    .eyebrow { display:inline-flex; align-items:center; gap:7px; color:var(--green); background:var(--mint); padding:5px 12px; border-radius:999px; font-weight:700; font-size:12px; letter-spacing:.04em; }
+    h1 { margin:16px 0 10px; font-size:clamp(32px,5vw,48px); line-height:1.15; letter-spacing:-.055em; }
+    .hero p { color:var(--muted); margin:0; font-size:16px; }
+    .layout { display:grid; grid-template-columns:minmax(0, .92fr) minmax(0,1.08fr); gap:20px; align-items:start; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:0 8px 28px rgba(37,65,49,.045); }
+    .form-card { padding:26px; }
+    .card-heading { display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+    .step { width:30px; height:30px; border-radius:10px; background:var(--mint); color:var(--green); display:grid; place-items:center; font-weight:800; font-size:13px; }
+    h2 { margin:0; font-size:17px; letter-spacing:-.02em; }
+    .field { margin:0 0 21px; }
+    label.field-label { display:block; margin-bottom:9px; font-weight:700; font-size:14px; }
+    select, input[type=text] { width:100%; padding:11px 13px; border:1px solid #d9e1da; border-radius:10px; background:#fff; color:var(--ink); outline:none; }
+    select:focus, input:focus { border-color:#5d9a77; box-shadow:0 0 0 3px rgba(35,106,75,.1); }
+    .hint { margin:7px 0 0; color:var(--muted); font-size:12px; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .chip { border:1px solid var(--line); border-radius:999px; padding:6px 11px; color:#435149; background:#fff; font-size:12px; cursor:pointer; transition:.15s; }
+    .chip:hover { border-color:#8db69a; color:var(--green); }
+    .chip[aria-pressed=true] { background:var(--mint); border-color:#b8d7c1; color:var(--green-dark); }
+    .custom-stack { margin-top:9px; }
+    .toggle-list { display:grid; gap:10px; }
+    .toggle { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 12px; border:1px solid var(--line); border-radius:11px; cursor:pointer; }
+    .toggle:hover { background:#fbfcfa; }
+    .toggle-copy { display:flex; flex-direction:column; line-height:1.4; }
+    .toggle-copy strong { font-size:13px; }
+    .toggle-copy small { margin-top:3px; color:var(--muted); font-size:11px; }
+    .switch { position:relative; flex:none; width:38px; height:22px; border-radius:99px; background:#dce3dd; transition:.2s; }
+    .switch::after { content:""; position:absolute; width:16px; height:16px; top:3px; left:3px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #0002; transition:.2s; }
+    .toggle input { position:absolute; opacity:0; pointer-events:none; }
+    .toggle input:checked + .switch { background:var(--green); }
+    .toggle input:checked + .switch::after { transform:translateX(16px); }
+    .toggle:focus-within { outline:3px solid rgba(35,106,75,.12); }
+    .generate { width:100%; display:flex; justify-content:center; align-items:center; gap:9px; padding:13px 18px; border:0; border-radius:11px; background:var(--green); color:#fff; font-weight:750; cursor:pointer; margin-top:22px; transition:background .15s,transform .15s; }
+    .generate:hover { background:var(--green-dark); transform:translateY(-1px); }
+    .output-card { overflow:hidden; }
+    .output-head { padding:19px 21px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .output-title { display:flex; align-items:center; gap:10px; min-width:0; }
+    .file-icon { color:var(--green); font-size:17px; }
+    .output-title h2 { font-size:15px; }
+    .file-name { color:var(--muted); font:12px ui-monospace,SFMono-Regular,monospace; }
+    .actions { display:flex; gap:8px; }
+    .action { padding:7px 11px; border:1px solid var(--line); border-radius:8px; background:white; color:#334139; font-weight:650; font-size:12px; cursor:pointer; white-space:nowrap; }
+    .action:hover { border-color:#a8c7b1; color:var(--green); }
+    .action.primary { color:white; background:var(--green); border-color:var(--green); }
+    .action.primary:hover { background:var(--green-dark); }
+    .preview { height:620px; overflow:auto; padding:23px 25px; background:#fcfdfb; }
+    pre { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; color:#39473f; font:12px/1.8 ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .status { min-height:22px; padding:0 22px 11px; color:var(--green); font-size:12px; }
+    footer { text-align:center; color:#87938b; font-size:12px; margin-top:27px; }
+    @media(max-width:760px) { .topbar { padding:18px 18px; } main { padding:22px 16px 48px; } .hero { margin:10px auto 28px; } .layout { grid-template-columns:1fr; } .form-card { padding:21px; } .preview { height:480px; } }
+    @media(max-width:420px) { .top-note { display:none; } .output-head { align-items:flex-start; flex-direction:column; } .actions { width:100%; } .action { flex:1; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">A</span><span>AGENTS.md 工坊</span></div>
+    <span class="top-note">轻松写好项目协作说明</span>
+  </header>
+  <main>
+    <section class="hero">
+      <span class="eyebrow">✦ 给 AI 编程助手的项目指南</span>
+      <h1>让项目说明，<span style="color:var(--green)">从一开始就清晰</span></h1>
+      <p>选好项目类型和协作偏好，生成一份适合你项目的中文 AGENTS.md。</p>
+    </section>
+    <div class="layout">
+      <section class="card form-card" aria-labelledby="setup-title">
+        <div class="card-heading"><span class="step">01</span><h2 id="setup-title">配置你的项目指南</h2></div>
+        <div class="field">
+          <label class="field-label" for="projectType">项目类型</label>
+          <select id="projectType">
+            <option value="网站">网站</option><option value="小程序">小程序</option><option value="Python 脚本">Python 脚本</option><option value="浏览器插件">浏览器插件</option><option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">技术栈 <span style="color:var(--muted);font-weight:400">（可多选）</span></label>
+          <div class="chips" id="stackChips" aria-label="选择技术栈">
+            <button class="chip" type="button" aria-pressed="false">React</button><button class="chip" type="button" aria-pressed="false">Vue</button><button class="chip" type="button" aria-pressed="false">TypeScript</button><button class="chip" type="button" aria-pressed="false">Node.js</button><button class="chip" type="button" aria-pressed="false">Python</button><button class="chip" type="button" aria-pressed="false">微信原生</button><button class="chip" type="button" aria-pressed="false">Chrome Extension</button><button class="chip" type="button" aria-pressed="false">HTML / CSS / JS</button>
+          </div>
+          <div class="custom-stack"><input id="customStack" type="text" placeholder="其他技术栈，逗号分隔（选填）" aria-label="其他技术栈"></div>
+          <p class="hint">未选择时会在指南中提醒先查看项目现有依赖。</p>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="field-label">协作偏好</label>
+          <div class="toggle-list">
+            <label class="toggle"><span class="toggle-copy"><strong>先问需求再动手</strong><small>需求不明确时，先确认目标与边界</small></span><input type="checkbox" value="先问需求再动手" checked><span class="switch"></span></label>
+            <label class="toggle"><span class="toggle-copy"><strong>小步提交</strong><small>每次只做范围清晰、便于审查的改动</small></span><input type="checkbox" value="小步提交" checked><span class="switch"></span></label>
+            <label class="toggle"><span class="toggle-copy"><strong>不删文件</strong><small>删除文件前先说明原因并征得同意</small></span><input type="checkbox" value="不删文件"><span class="switch"></span></label>
+            <label class="toggle"><span class="toggle-copy"><strong>写测试</strong><small>为新增或修改的行为补充适当验证</small></span><input type="checkbox" value="写测试" checked><span class="switch"></span></label>
+            <label class="toggle"><span class="toggle-copy"><strong>中文注释</strong><small>注释优先使用简体中文，表达清楚意图</small></span><input type="checkbox" value="中文注释" checked><span class="switch"></span></label>
+          </div>
+        </div>
+        <button id="generate" class="generate" type="button"><span>✦</span> 生成 AGENTS.md</button>
+      </section>
+      <section class="card output-card" aria-labelledby="output-title">
+        <div class="output-head">
+          <div class="output-title"><span class="file-icon">▤</span><div><h2 id="output-title">生成预览</h2><span class="file-name">AGENTS.md</span></div></div>
+          <div class="actions"><button id="copy" class="action" type="button">复制内容</button><button id="download" class="action primary" type="button">↓ 下载文件</button></div>
+        </div>
+        <div class="preview"><pre id="result" aria-live="polite"></pre></div>
+        <div class="status" id="status" aria-live="polite"></div>
+      </section>
+    </div>
+    <footer>在项目根目录保存为 <code>AGENTS.md</code>，让协作约定随项目一起维护。</footer>
+  </main>
+  <script>
+    const typeNotes = {
+      '网站': '关注页面结构、交互体验、响应式布局、无障碍与浏览器兼容性；改动界面时保持现有设计风格。',
+      '小程序': '关注页面与组件规范、平台 API、授权与隐私、不同屏幕适配；避免未经确认修改应用配置或发布设置。',
+      'Python 脚本': '关注输入输出、异常处理、可重复运行与依赖管理；处理文件时先确认路径和覆盖行为。',
+      '浏览器插件': '关注 manifest 权限最小化、内容脚本与后台脚本边界、浏览器兼容性和用户数据安全。',
+      '其他': '先阅读项目结构与现有文档，遵循仓库已经采用的命名、组织和实现方式。'
+    };
+    const selectedStacks = () => [...document.querySelectorAll('.chip[aria-pressed="true"]')].map(x => x.textContent.trim());
+    document.querySelectorAll('.chip').forEach(button => button.addEventListener('click', () => button.setAttribute('aria-pressed', button.getAttribute('aria-pressed') !== 'true')));
+    function generate() {
+      const type = document.getElementById('projectType').value;
+      const stacks = [...selectedStacks(), ...document.getElementById('customStack').value.split(',').map(x => x.trim()).filter(Boolean)];
+      const prefs = [...document.querySelectorAll('.toggle input:checked')].map(input => input.value);
+      const preferenceText = {
+        '先问需求再动手': '- 需求、范围或验收标准不明确时，先提出简短问题确认，再开始实现。',
+        '小步提交': '- 将工作拆成小而完整的步骤；每步说明改动内容与影响，避免顺手扩大范围。',
+        '不删文件': '- 未经用户明确同意，不删除文件、目录或已有数据；确需删除时先解释原因并等待确认。',
+        '写测试': '- 为新增或变更的行为补充合适的测试；运行相关检查并如实报告结果。',
+        '中文注释': '- 新增注释和面向协作者的说明使用简体中文；注释解释原因与约束，避免重复代码本身。'
+      };
+      const stackText = stacks.length ? stacks.join('、') : '以仓库现有配置为准；开始前检查依赖清单和锁文件，不擅自引入新技术栈。';
+      const prefsText = prefs.length ? prefs.map(x => preferenceText[x]).join('\n') : '- 按用户当前任务要求协作；遇到不明确或有风险的操作时先确认。';
+      const content = `# AGENTS.md\n\n## 项目概览\n\n- 项目类型：${type}\n- 技术栈：${stackText}\n- 本指南面向在本仓库中协作的 AI 编程助手。\n\n## 项目特定注意事项\n\n${typeNotes[type]}\n\n## 开始工作前\n\n- 先阅读仓库说明、目录结构和相关源文件，确认现有约定与实际实现。\n- 优先复用现有依赖、组件和工具；除非任务需要且得到允许，不新增依赖。\n- 只处理完成当前任务所必需的范围，保留无关的本地改动。\n\n## 协作偏好\n\n${prefsText}\n\n## 实现与代码质量\n\n- 遵循附近代码的风格、命名方式和目录组织，保持改动清晰易读。\n- 不臆测不存在的接口、脚本或命令；执行前先检查项目配置。\n- 涉及配置、密钥、用户数据或外部服务时，谨慎处理并避免泄露敏感信息。\n\n## 验证与交付\n\n- 根据改动选择最相关的检查或验证；若无法运行，说明原因及尚未验证的部分。\n- 完成后简要汇报做了什么、验证结果，以及需要用户留意的事项。\n`;
+      document.getElementById('result').textContent = content;
+      document.getElementById('status').textContent = '已生成，可复制或下载。';
+    }
+    document.getElementById('generate').addEventListener('click', generate);
+    document.getElementById('copy').addEventListener('click', async () => {
+      const text = document.getElementById('result').textContent;
+      try { await navigator.clipboard.writeText(text); document.getElementById('status').textContent = '已复制到剪贴板。'; }
+      catch { const area = document.createElement('textarea'); area.value = text; document.body.append(area); area.select(); document.execCommand('copy'); area.remove(); document.getElementById('status').textContent = '已复制到剪贴板。'; }
+    });
+    document.getElementById('download').addEventListener('click', () => {
+      const blob = new Blob([document.getElementById('result').textContent], {type:'text/markdown;charset=utf-8'});
+      const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'AGENTS.md'; link.click(); URL.revokeObjectURL(link.href);
+      document.getElementById('status').textContent = 'AGENTS.md 已开始下载。';
+    });
+    generate();
+  </script>
+</body>
+</html>
